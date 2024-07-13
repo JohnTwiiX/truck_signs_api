@@ -14,4 +14,6 @@ RUN pip install --upgrade pip && \
 
 RUN chmod +x ./entrypoint.sh
 
+EXPOSE 8020
+
 ENTRYPOINT ["/app/entrypoint.sh"]

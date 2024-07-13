@@ -118,6 +118,8 @@ The behavior of some of the views had to be modified to address functionalities 
 
     RUN chmod +x ./entrypoint.sh
 
+    EXPOSE 8020
+
     ENTRYPOINT ["/app/entrypoint.sh"]
     ```
 
@@ -126,6 +128,11 @@ The behavior of some of the views had to be modified to address functionalities 
     ```bash
     docker build -t <image-name>:<tag-name> .
     # -t Name and optionally a tag in the <image-name>:<image-tag> format
+    ```
+
+    ```bash
+    # e.g.
+    docker build -t trucksign:0.0.0.1 .
     ```
 
 1. create volume for storage data
