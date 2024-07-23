@@ -97,6 +97,92 @@ The behavior of some of the views had to be modified to address functionalities 
     python manage.py createsuperuser
     ```
 
+## Dockerfile
+
+1. create a docker file
+
+    ```python
+    FROM python:3.9-slim
+
+    WORKDIR /app
+
+    # Copy the directory
+    COPY . $WORKDIR
+
+    RUN apt-get update && \
+        apt-get install -y build-essential gcc netcat-openbsd
+
+    # Install requirements
+    RUN pip install --upgrade pip && \
+        pip install -r requirements.txt
+
+    RUN chmod +x ./entrypoint.sh
+
+    EXPOSE 8020
+
+    ENTRYPOINT ["/app/entrypoint.sh"]
+    ```
+
+1. create a docker image
+
+    ```bash
+    docker build -t <image-name>:<tag-name> .
+    # -t Name and optionally a tag in the <image-name>:<image-tag> format
+    ```
+
+    ```bash
+    # e.g.
+    docker build -t trucksign:0.0.0.1 .
+    ```
+
+1. create volume for storage data
+
+    ```bash
+    # create volume
+    docker volume create <volume-name>
+    ```
+
+1. create a network
+
+    ```bash
+    docker network create <network-name>
+    ```
+
+1. start the postgres docker container
+
+    ```bash
+    docker run --name <docker-name> \
+        --network <networkname> \
+        -e POSTGRES_PASSWORD=<postgres-password> \
+        -e POSTGRES_USER=<postgres-user> \
+        -e POSTGRES_DB=<postgres-db-name> \
+        -v <postgres-volume>:/var/lib/postgresql/data \ #store the postgres data in a volume
+        -d postgres #postgres image latest version
+    ```
+
+1. start the your docker container
+
+    ```bash
+    docker run --name <container-name> \
+        --network <network-name> \ #the same network as postgres container!
+        -p 8020:8000 \
+        -v <media-volume>:/app/media \
+        -v <static-volume>:/app/static \
+        --restart on-failure \
+        <image-name>:<image-tag>
+    ```
+
+1. create a superuser
+
+    - jump in your container
+    ```bash
+    docker exec -it <container-id> bash
+    ```
+
+    - create your superuser
+    ```bash
+    python manage.py createsuperuser
+    ```
 
 __NOTE:__ To create Truck vinyls with Truck logos in them, first create the __Category__ Truck Sign, and then the __Product__ (can have any name). This is to make sure the frontend retrieves the Truck vinyls for display in the Product Grid as it only fetches the products of the category Truck Sign.
 
